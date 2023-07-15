@@ -3,13 +3,13 @@ package main
 import (
 	"database/sql"
 	"fmt"
+	_ "github.com/lib/pq"
+	"github.com/rs/cors"
 	"kiku-backend/app/application"
 	"kiku-backend/app/handler"
 	"kiku-backend/infrastructure"
 	"log"
 	"net/http"
-
-	_ "github.com/lib/pq"
 )
 
 const (
@@ -41,8 +41,24 @@ func main() {
 	service := &application.RegisterService{Repo: repo}
 	loginService := &application.LoginService{Repo: repo}
 	getUserHandler := &handler.GetUserHandler{LoginService: loginService}
-	http.Handle("/register", handler.RegisterHandler(*service))
-	http.Handle("/login", handler.LoginHandler(*loginService))
-	http.Handle("/user", getUserHandler)
-	log.Fatal(http.ListenAndServe(":8080", nil))
+
+	// create an http.ServeMux
+	mux := http.NewServeMux()
+
+	// handle the routes
+	mux.Handle("/register", handler.RegisterHandler(*service))
+	mux.Handle("/user", getUserHandler)
+	mux.Handle("/login", handler.LoginHandler(*loginService))
+
+	c := cors.New(cors.Options{
+		AllowedOrigins:   []string{"http://localhost:5173"}, // your app's origin
+		AllowCredentials: true,
+		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE"},
+		AllowedHeaders:   []string{"Authorization", "Content-Type"},
+	})
+
+	corsHandler := c.Handler(mux)
+
+	// start the server
+	log.Fatal(http.ListenAndServe(":8080", corsHandler))
 }
