@@ -7,6 +7,7 @@ import (
 	"github.com/rs/cors"
 	"kiku-backend/app/application"
 	"kiku-backend/app/handler"
+	"kiku-backend/database"
 	"kiku-backend/infrastructure"
 	"log"
 	"net/http"
@@ -37,6 +38,7 @@ func main() {
 	}
 
 	fmt.Println("Successfully connected!")
+	database.InitializeDatabase(db)
 	repo := &infrastructure.SqlUserRepository{DB: db}
 	service := &application.RegisterService{Repo: repo}
 	loginService := &application.LoginService{Repo: repo}
