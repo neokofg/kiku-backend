@@ -8,13 +8,25 @@ import (
 	"net/http"
 )
 
+type RegisterRequest struct {
+	Login    string `json:"login"`
+	Password string `json:"password"`
+	Email    string `json:"email"`
+}
+
 func RegisterHandler(s application.RegisterService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		var user domain.User
-		err := json.NewDecoder(r.Body).Decode(&user)
+		var req RegisterRequest
+		err := json.NewDecoder(r.Body).Decode(&req)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
+		}
+
+		user := domain.User{
+			Login:    req.Login,
+			Password: req.Password,
+			Email:    req.Email,
 		}
 
 		err = s.Register(&user)

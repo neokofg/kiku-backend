@@ -39,18 +39,23 @@ func main() {
 
 	fmt.Println("Successfully connected!")
 	database.InitializeDatabase(db)
-	repo := &infrastructure.SqlUserRepository{DB: db}
-	service := &application.RegisterService{Repo: repo}
-	loginService := &application.LoginService{Repo: repo}
+	userRepo := &infrastructure.SqlUserRepository{DB: db}
+	musicRepo := &infrastructure.SqlMusicRepository{DB: db}
+	registerService := &application.RegisterService{Repo: userRepo}
+	loginService := &application.LoginService{Repo: userRepo}
+	musicService := &application.MusicService{Repo: musicRepo, UserRepository: userRepo}
 	getUserHandler := &handler.GetUserHandler{LoginService: loginService}
+	getFileHandler := &handler.GetFileHandler{}
 
 	// create an http.ServeMux
 	mux := http.NewServeMux()
 
 	// handle the routes
-	mux.Handle("/register", handler.RegisterHandler(*service))
+	mux.Handle("/register", handler.RegisterHandler(*registerService))
 	mux.Handle("/user", getUserHandler)
 	mux.Handle("/login", handler.LoginHandler(*loginService))
+	mux.Handle("/upload", handler.UploadHandler(*musicService))
+	mux.Handle("/static", getFileHandler)
 
 	c := cors.New(cors.Options{
 		AllowedOrigins:   []string{"http://localhost:5173"}, // your app's origin

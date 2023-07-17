@@ -3,7 +3,7 @@ package domain
 type Music struct {
 	Name   string `json:"name"`
 	Author string `json:"author"`
-	User   User   `json:"user"`
+	User   int    `json:"user"`
 	Url    string `json:"url"`
 }
 

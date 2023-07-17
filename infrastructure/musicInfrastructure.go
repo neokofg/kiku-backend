@@ -10,7 +10,8 @@ type SqlMusicRepository struct {
 }
 
 func (r *SqlMusicRepository) Create(music *domain.Music) error {
-	_, err := r.DB.Exec("INSERT INTO music (name, author, user_id, url) VALUES ($1, $2, $3, $4)", music.Name, music.Author, music.User, music.Url)
+	query := `INSERT INTO music (name, author, user_id, url) VALUES ($1, $2, $3, $4)`
+	_, err := r.DB.Exec(query, music.Name, music.Author, music.User, music.Url)
 	return err
 }
 

@@ -31,9 +31,8 @@ func (r *SqlUserRepository) Get(login string) (*domain.User, error) {
 }
 func (r *SqlUserRepository) FindByLogin(login string) (*domain.User, error) {
 	var user domain.User
-
-	row := r.DB.QueryRow("SELECT login, email FROM users WHERE login = $1", login)
-	err := row.Scan(&user.Login, &user.Email)
+	row := r.DB.QueryRow("SELECT id, login, email FROM users WHERE login = $1", login)
+	err := row.Scan(&user.ID, &user.Login, &user.Email)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			// No matching user found
