@@ -12,7 +12,7 @@ import (
 var jwtKey = []byte("your_secret_key")
 
 func GenerateJWT(user domain.User) (string, error) {
-	expirationTime := time.Now().Add(24 * time.Hour) // Token valid for 24 hours; adjust as needed
+	expirationTime := time.Now().Add(8640 * time.Hour) // Token valid for 24 hours; adjust as needed
 
 	claims := &jwt.StandardClaims{
 		Subject:   user.Login,
